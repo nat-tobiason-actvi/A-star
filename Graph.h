@@ -35,8 +35,9 @@ class Graph{
     public:
         void insertVertex(char value);
         void insertEdge(char v1, char v2, int w);
-        vertex *search(int v);
+        vertex *search(char v);
         void printGraph();
+        void dijkstra(char, char);
 };
 
 void Graph::insertVertex(char value){
@@ -66,7 +67,7 @@ void Graph::insertEdge(char v1, char v2, int weight){
     }
 }
 
-vertex* Graph::search(int value){
+vertex* Graph::search(char value){
     for(int i = 0; i < vertices.size(); i++){
         if(vertices[i].key == value) return &vertices[i];
     }
@@ -81,4 +82,50 @@ void Graph::printGraph(){
         }
         cout << endl;
     }
+}
+
+
+
+
+void print_vector(vector <vertex> v){
+    for(int i = 0; i < v.size(); i++){
+        cout << v[i].key << " --> ";
+    }
+    cout << endl;
+}
+
+
+void Graph::dijkstra(char start, char end){
+    vertex* startV = search(start);
+    vertex* endV = search(end);
+
+    startV->visited = true;
+    startV->distance = 0;
+
+    vector <vertex> visited;
+    visited.push_back(*startV); // list of visited verticies
+
+    while(!endV->visited){
+        int minDistance = INT_MAX;
+        vertex* visitedV = new vertex(' ');
+
+        for(int i = 0; i < visited.size(); i++){
+            vertex v = visited[i];
+            for(int j = 0; j < visited[i].adj.size(); j++){
+                if(!visited[i].adj[j].v->visited){
+                    int dist = v.distance + v.adj[j].weight;
+                    if(dist < minDistance){
+                        visitedV = v.adj[j].v;
+                        minDistance = dist;
+                    }
+                }
+            }
+        }
+        visitedV->distance = minDistance;
+        visitedV->visited = true;
+        visited.push_back(*visitedV);
+
+    }
+    cout << "path: ";
+    print_vector(visited);
 }
